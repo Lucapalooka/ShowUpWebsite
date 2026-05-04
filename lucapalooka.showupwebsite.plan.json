@@ -1,0 +1,7 @@
+{
+    "provider": "staticfile",
+    "config": {
+        "static_dir": "public"
+    },
+    "services": []
+}
