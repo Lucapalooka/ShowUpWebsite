@@ -2,7 +2,7 @@
   "name": "showup-website",
   "private": true,
   "scripts": {
-    "build": "html-validate index.html"
+    "build": "html-validate public/index.html"
   },
   "devDependencies": {
     "html-validate": "^8.7.4"
