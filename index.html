@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-ZA">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ShowUp — WhatsApp Follow-Up That Fills Your Calendar</title>
+<title>ShowUp — WhatsApp Follow-Up for South African Businesses</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
@@ -27,11 +27,7 @@ color: var(--ink);
 font-family: 'JetBrains Mono', monospace;
 font-weight: 300;
 overflow-x: hidden;
-cursor: none;
 }
-
-#cur { position:fixed;width:8px;height:8px;background:var(--ink);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .2s,height .2s,background .2s,opacity .2s; }
-#cur.big { width:48px;height:48px;background:var(--green);mix-blend-mode:multiply; }
 
 nav {
 position:fixed;top:0;left:0;right:0;z-index:200;
@@ -48,7 +44,7 @@ nav.shadow { box-shadow:0 2px 24px rgba(0,0,0,.07); }
 nav ul { list-style:none;display:flex;gap:2rem; }
 nav a { color:var(--muted);text-decoration:none;font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;transition:color .2s; }
 nav a:hover { color:var(--ink); }
-.nav-btn { background:var(--ink);color:var(--paper);border:none;padding:.6rem 1.4rem;font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;cursor:none;transition:background .2s; }
+.nav-btn { background:var(--ink);color:var(--paper);border:none;padding:.6rem 1.4rem;font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:background .2s; }
 .nav-btn:hover { background:var(--green-dark); }
 
 #hero {
@@ -84,9 +80,9 @@ max-width:440px;font-size:.88rem;line-height:1.75;color:#5a5750;
 margin-bottom:2.5rem;opacity:0;animation:fadeUp .7s .4s forwards;
 }
 .hero-ctas { display:flex;gap:1rem;align-items:center;opacity:0;animation:fadeUp .7s .55s forwards; }
-.btn-ink { background:var(--ink);color:var(--paper);border:none;padding:.9rem 2.2rem;font-family:'JetBrains Mono',monospace;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;cursor:none;transition:transform .2s,box-shadow .2s; }
+.btn-ink { background:var(--ink);color:var(--paper);border:none;padding:.9rem 2.2rem;font-family:'JetBrains Mono',monospace;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:transform .2s,box-shadow .2s; }
 .btn-ink:hover { transform:translateY(-2px);box-shadow:0 8px 28px rgba(12,11,9,.18); }
-.btn-outline { background:transparent;color:var(--ink);border:1px solid var(--rule);padding:.9rem 2.2rem;font-family:'JetBrains Mono',monospace;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;cursor:none;transition:border-color .2s; }
+.btn-outline { background:transparent;color:var(--ink);border:1px solid var(--rule);padding:.9rem 2.2rem;font-family:'JetBrains Mono',monospace;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:border-color .2s; }
 .btn-outline:hover { border-color:var(--ink); }
 
 .hero-stat { padding:1.8rem 2rem;border-left:1px solid var(--rule); }
@@ -266,12 +262,12 @@ section { padding:6rem 2.5rem;border-bottom:1px solid var(--rule); }
 .f-grp input,.f-grp select,.f-grp textarea {
 background:#0d0d0d;border:1px solid #1e1e1e;color:var(--paper);
 padding:.8rem .95rem;font-family:'JetBrains Mono',monospace;font-size:.78rem;
-font-weight:300;outline:none;transition:border-color .2s;resize:none;cursor:none;-webkit-appearance:none;
+font-weight:300;outline:none;transition:border-color .2s;resize:none;-webkit-appearance:none;
 }
 .f-grp input::placeholder,.f-grp textarea::placeholder { color:#2a2a2a; }
 .f-grp input:focus,.f-grp select:focus,.f-grp textarea:focus { border-color:var(--green); }
 .f-grp select option { background:#0d0d0d; }
-.f-submit { background:var(--green);color:var(--ink);border:none;padding:1.1rem;font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:.12em;cursor:none;transition:opacity .2s,transform .2s;margin-top:.4rem; }
+.f-submit { background:var(--green);color:var(--ink);border:none;padding:1.1rem;font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:.12em;cursor:pointer;transition:opacity .2s,transform .2s;margin-top:.4rem; }
 .f-submit:hover { opacity:.9;transform:translateY(-1px); }
 .f-note { font-size:.6rem;color:#333;text-align:center;letter-spacing:.04em; }
 .success-box { display:none;border:1px solid rgba(24,233,106,.2);background:rgba(24,233,106,.04);padding:3rem;text-align:center; }
@@ -310,7 +306,6 @@ section { padding:4rem 1.5rem; }
 </style>
 </head>
 <body>
-<div id="cur"></div>
 
 <nav id="nav">
   <div class="nav-logo"><span class="nav-dot"></span>ShowUp</div>
@@ -320,17 +315,17 @@ section { padding:4rem 1.5rem; }
     <li><a href="#features">Features</a></li>
     <li><a href="#proof">Results</a></li>
   </ul>
-  <button class="nav-btn" onclick="go('contact')">Book a Demo</button>
+  <button type="button" class="nav-btn" onclick="go('contact')">Book a Demo</button>
 </nav>
 
 <section id="hero">
   <div class="hero-left">
     <div class="hero-eyebrow"><span class="eyebrow-pill">WhatsApp Bot</span> Appointment follow-up, automated</div>
     <h1 class="hero-hed">Your clients<br><em>always</em><br>ShowUp.</h1>
-    <p class="hero-body">ShowUp sends intelligent WhatsApp reminders that get read, get replied to, and get your slots confirmed — automatically. No more chasing. No more empty chairs.</p>
+    <p class="hero-body">ShowUp sends intelligent WhatsApp reminders that get read, get replied to, and get your slots confirmed — automatically. Built for South African salons, clinics, coaches, and practices. No more chasing. No more empty chairs.</p>
     <div class="hero-ctas">
-      <button class="btn-ink" onclick="go('contact')">Book a Free Demo →</button>
-      <button class="btn-outline" onclick="go('how')">See How It Works</button>
+      <button type="button" class="btn-ink" onclick="go('contact')">Book a Free Demo →</button>
+      <button type="button" class="btn-outline" onclick="go('how')">See How It Works</button>
     </div>
   </div>
 
@@ -343,11 +338,11 @@ section { padding:4rem 1.5rem; }
           <div><div class="wa-nm">ShowUp Reminders</div><div class="wa-st">● Online</div></div>
         </div>
         <div class="wa-msgs">
-          <div class="bub bub-them">👋 Hi <b>Sarah!</b> Reminder — you have <b>Dr. Patel</b> tomorrow, Wed 14th at <b>2:00 PM.</b> Can you confirm?<div class="bub-time">09:00 AM ✓✓</div></div>
-          <div class="bub bub-me">Yes I'll be there! 👍<div class="bub-time">09:04 AM</div></div>
-          <div class="bub bub-them">✅ <b>Confirmed!</b> We're at <b>12 Park Ave, 4th Floor.</b> Reply MAP for directions or CANCEL to reschedule.<div class="bub-time">09:04 AM ✓✓</div></div>
-          <div class="bub bub-them">⏰ See you in <b>1 hour</b>, Sarah! The team is ready for you.<div class="bub-time">01:00 PM ✓✓</div></div>
-          <div class="bub bub-me">On my way! 🚗<div class="bub-time">01:06 PM</div></div>
+          <div class="bub bub-them">👋 Hi <b>Lerato!</b> Reminder — you have <b>Dr. Naidoo</b> tomorrow, Wed 14th at <b>14:00.</b> Can you confirm?<div class="bub-time">09:00 ✓✓</div></div>
+          <div class="bub bub-me">Yes I'll be there! 👍<div class="bub-time">09:04</div></div>
+          <div class="bub bub-them">✅ <b>Confirmed!</b> We're at <b>Shop 3, 18 Kloof St, Cape Town CBD.</b> Reply MAP for directions or CANCEL to reschedule.<div class="bub-time">09:04 ✓✓</div></div>
+          <div class="bub bub-them">⏰ See you in <b>1 hour</b>, Lerato! The team is ready for you.<div class="bub-time">13:00 ✓✓</div></div>
+          <div class="bub bub-me">On my way! 🚗<div class="bub-time">13:06</div></div>
         </div>
         <div class="wa-input-bar"><div class="wa-input-fake">Type a message</div></div>
       </div>
@@ -357,7 +352,7 @@ section { padding:4rem 1.5rem; }
   <div class="hero-bottom">
     <div class="hero-stat"><div class="h-num"><span class="counter" data-to="87">0</span><span class="u">%</span></div><div class="h-lbl">Fewer no-shows</div></div>
     <div class="hero-stat"><div class="h-num"><span class="counter" data-to="98">0</span><span class="u">%</span></div><div class="h-lbl">WhatsApp open rate</div></div>
-    <div class="hero-stat"><div class="h-num">£<span class="counter" data-to="4200">0</span></div><div class="h-lbl">Avg. monthly recovered</div></div>
+    <div class="hero-stat"><div class="h-num">R<span class="counter" data-to="95000">0</span></div><div class="h-lbl">Avg. monthly recovered (ZAR)</div></div>
     <div class="hero-stat"><div class="h-num"><span class="counter" data-to="3">0</span><span class="u">min</span></div><div class="h-lbl">Setup time</div></div>
   </div>
 </section>
@@ -393,14 +388,14 @@ section { padding:4rem 1.5rem; }
       </div>
 
   <div class="rev-chart">
-    <div class="rev-title">Monthly revenue recovered — ShowUp customers, avg. across 6 months</div>
+    <div class="rev-title">Monthly revenue recovered (rands) — ShowUp customers, avg. across 6 months</div>
     <div class="rev-bars">
-      <div class="rev-bar-wrap"><div class="rev-bar-val">£620</div><div class="rev-bar before" style="height:18px"></div><div class="rev-bar-lbl">Mo 1</div></div>
-      <div class="rev-bar-wrap"><div class="rev-bar-val g">£1.4k</div><div class="rev-bar after" style="height:42px"></div><div class="rev-bar-lbl">Mo 2</div></div>
-      <div class="rev-bar-wrap"><div class="rev-bar-val g">£2.1k</div><div class="rev-bar after" style="height:60px"></div><div class="rev-bar-lbl">Mo 3</div></div>
-      <div class="rev-bar-wrap"><div class="rev-bar-val g">£2.8k</div><div class="rev-bar after" style="height:74px"></div><div class="rev-bar-lbl">Mo 4</div></div>
-      <div class="rev-bar-wrap"><div class="rev-bar-val g">£3.6k</div><div class="rev-bar after" style="height:86px"></div><div class="rev-bar-lbl">Mo 5</div></div>
-      <div class="rev-bar-wrap"><div class="rev-bar-val g">£4.2k</div><div class="rev-bar after" style="height:90px"></div><div class="rev-bar-lbl">Mo 6</div></div>
+      <div class="rev-bar-wrap"><div class="rev-bar-val">R14k</div><div class="rev-bar before" style="height:18px"></div><div class="rev-bar-lbl">Mo 1</div></div>
+      <div class="rev-bar-wrap"><div class="rev-bar-val g">R32k</div><div class="rev-bar after" style="height:42px"></div><div class="rev-bar-lbl">Mo 2</div></div>
+      <div class="rev-bar-wrap"><div class="rev-bar-val g">R47k</div><div class="rev-bar after" style="height:60px"></div><div class="rev-bar-lbl">Mo 3</div></div>
+      <div class="rev-bar-wrap"><div class="rev-bar-val g">R63k</div><div class="rev-bar after" style="height:74px"></div><div class="rev-bar-lbl">Mo 4</div></div>
+      <div class="rev-bar-wrap"><div class="rev-bar-val g">R81k</div><div class="rev-bar after" style="height:86px"></div><div class="rev-bar-lbl">Mo 5</div></div>
+      <div class="rev-bar-wrap"><div class="rev-bar-val g">R95k</div><div class="rev-bar after" style="height:90px"></div><div class="rev-bar-lbl">Mo 6</div></div>
     </div>
     <div class="rev-legend">
       <div class="rev-leg-item"><div class="rev-leg-dot" style="background:#333"></div>Without ShowUp</div>
@@ -411,15 +406,15 @@ section { padding:4rem 1.5rem; }
 
 <div class="stats-right">
   <div class="stat-callout">
-    <div class="callout-pre">Average business loses annually to no-shows</div>
-    <div class="callout-num">£<span class="counter-big" data-to="8400">0</span></div>
-    <div class="callout-post">That's 2–3 holidays, a new team member, or reinvested marketing — walking out the door every year, unnoticed.</div>
+    <div class="callout-pre">Average SA business loses annually to no-shows</div>
+    <div class="callout-num">R<span class="counter-big" data-to="190000">0</span></div>
+    <div class="callout-post">That's a family getaway, a new hire, or reinvested ads — walking out the door every year, unnoticed.</div>
   </div>
 
   <div class="mini-stats">
     <div class="mini-stat"><div class="ms-num"><span class="counter" data-to="94">0</span><span class="a">%</span></div><div class="ms-lbl">Confirm within 30 mins</div></div>
     <div class="mini-stat"><div class="ms-num"><span class="counter" data-to="2">0</span><span class="a">min</span></div><div class="ms-lbl">Avg client response</div></div>
-    <div class="mini-stat"><div class="ms-num"><span class="counter" data-to="340">0</span><span class="a">+</span></div><div class="ms-lbl">Businesses on ShowUp</div></div>
+    <div class="mini-stat"><div class="ms-num"><span class="counter" data-to="340">0</span><span class="a">+</span></div><div class="ms-lbl">SA businesses on ShowUp</div></div>
     <div class="mini-stat"><div class="ms-num"><span class="counter" data-to="50">0</span><span class="a">k+</span></div><div class="ms-lbl">Bookings confirmed /mo</div></div>
   </div>
 
@@ -445,7 +440,7 @@ section { padding:4rem 1.5rem; }
   <h2 class="sec-hed">Three steps. <em>Zero</em> manual effort.</h2>
   <p class="sec-sub">ShowUp runs silently in the background so you never think about it again.</p>
   <div class="steps reveal" style="transition-delay:.1s">
-    <div class="step"><div class="step-n">01</div><div class="step-tag">5 minutes</div><h3>Connect Your Calendar</h3><p>Link ShowUp to Calendly, Acuity, Google Calendar or any booking tool via Zapier. One authorisation. Nothing else.</p></div>
+    <div class="step"><div class="step-n">01</div><div class="step-tag">5 minutes</div><h3>Connect Your Calendar</h3><p>Link ShowUp to Calendly, Google Calendar, Fresha, Bookem, or any booking tool via Make or Zapier. One authorisation. Nothing else.</p></div>
     <div class="step"><div class="step-n">02</div><div class="step-tag">Automatic</div><h3>Bot Sends Follow-Ups</h3><p>ShowUp messages each client on WhatsApp — 24hrs and 2hrs before — collecting confirmations, handling reschedules, answering FAQs.</p></div>
     <div class="step"><div class="step-n">03</div><div class="step-tag">Live</div><h3>Watch Attendance Climb</h3><p>Your dashboard shows confirmation rates, no-show trends and recovered revenue in real time. Know exactly what ShowUp saves you.</p></div>
   </div>
@@ -465,7 +460,7 @@ section { padding:4rem 1.5rem; }
         <li>Manual reschedule coordination via endless texts</li>
         <li>Zero visibility on who's actually confirmed</li>
       </ul>
-      <div class="ba-total"><div class="ba-total-lbl">Estimated annual loss</div><div class="ba-total-val r">−£8,400</div></div>
+      <div class="ba-total"><div class="ba-total-lbl">Estimated annual loss</div><div class="ba-total-val r">−R190,000</div></div>
     </div>
     <div class="ba-col after">
       <div class="ba-heading"><span class="ba-pill ap">With ShowUp</span></div>
@@ -477,7 +472,7 @@ section { padding:4rem 1.5rem; }
         <li>One-tap confirm or reschedule — frictionless for clients</li>
         <li>Live dashboard: confirmed, pending, at-risk at a glance</li>
       </ul>
-      <div class="ba-total"><div class="ba-total-lbl">Average monthly recovery</div><div class="ba-total-val g">+£4,200</div></div>
+      <div class="ba-total"><div class="ba-total-lbl">Average monthly recovery</div><div class="ba-total-val g">+R95,000</div></div>
     </div>
   </div>
 </section>
@@ -491,7 +486,7 @@ section { padding:4rem 1.5rem; }
     <div class="feat"><div class="feat-n">03</div><h4>AI Personalisation</h4><p>Every message uses the client's name, appointment details and business context. Never sounds like a generic bot.</p></div>
     <div class="feat"><div class="feat-n">04</div><h4>Cancellation Waitlist</h4><p>Late cancellations trigger your waitlist automatically — filling gaps before you even notice they're empty.</p></div>
     <div class="feat"><div class="feat-n">05</div><h4>Revenue Dashboard</h4><p>Real-time view of confirmation rates, no-show trends and recovered revenue — updated live as responses arrive.</p></div>
-    <div class="feat"><div class="feat-n">06</div><h4>GDPR Ready</h4><p>Built-in opt-out handling, consent logging and data retention controls. You're covered from day one.</p></div>
+    <div class="feat"><div class="feat-n">06</div><h4>POPIA-ready</h4><p>Built for South Africa's POPIA: opt-out handling, consent logging, and retention controls — plus GDPR-friendly patterns if you serve international clients.</p></div>
   </div>
 </section>
 
@@ -502,21 +497,21 @@ section { padding:4rem 1.5rem; }
     <div class="t-card">
       <div class="t-stars">★★★★★</div>
       <p class="t-body">"We were losing roughly 6 slots per week to no-shows. After a month with ShowUp that's down to one. The dashboard alone is worth the subscription."</p>
-      <div class="t-foot"><div class="t-av">LM</div><div><div class="t-nm">Laura M.</div><div class="t-role">Aesthetic Clinic, London</div></div></div>
+      <div class="t-foot"><div class="t-av">LM</div><div><div class="t-nm">Laura M.</div><div class="t-role">Aesthetic clinic, Cape Town</div></div></div>
     </div>
     <div class="t-card">
       <div class="t-stars">★★★★★</div>
       <p class="t-body">"My clients reply within minutes. I ran email reminders for three years — nobody read them. WhatsApp is a completely different channel."</p>
-      <div class="t-foot"><div class="t-av">JK</div><div><div class="t-nm">James K.</div><div class="t-role">Personal Trainer, Manchester</div></div></div>
+      <div class="t-foot"><div class="t-av">JK</div><div><div class="t-nm">James K.</div><div class="t-role">Personal trainer, Johannesburg</div></div></div>
     </div>
     <div class="t-card">
       <div class="t-stars">★★★★★</div>
-      <p class="t-body">"Setup was genuinely 4 minutes. I connected Calendly and left it running. Haven't had to chase a client for a confirmation since."</p>
-      <div class="t-foot"><div class="t-av">AT</div><div><div class="t-nm">Amara T.</div><div class="t-role">Therapist, Birmingham</div></div></div>
+      <p class="t-body">"Setup was genuinely 4 minutes. I connected my diary and left it running. Haven't had to chase a client for a confirmation since."</p>
+      <div class="t-foot"><div class="t-av">AT</div><div><div class="t-nm">Amara T.</div><div class="t-role">Therapist, Durban</div></div></div>
     </div>
   </div>
   <div class="proof-bottom reveal" style="transition-delay:.2s">
-    <div class="pb-stat"><div class="pb-n"><span class="counter" data-to="340">0</span><span class="g">+</span></div><div class="pb-l">Active businesses</div></div>
+    <div class="pb-stat"><div class="pb-n"><span class="counter" data-to="340">0</span><span class="g">+</span></div><div class="pb-l">Active SA businesses</div></div>
     <div class="pb-stat"><div class="pb-n"><span class="counter" data-to="50">0</span><span class="g">k+</span></div><div class="pb-l">Bookings confirmed /mo</div></div>
     <div class="pb-stat"><div class="pb-n"><span class="counter" data-to="87">0</span><span class="g">%</span></div><div class="pb-l">Avg. no-show reduction</div></div>
     <div class="pb-stat"><div class="pb-n">4.<span class="g">9</span></div><div class="pb-l">Average rating</div></div>
@@ -531,8 +526,8 @@ section { padding:4rem 1.5rem; }
     <div>
       <div class="c-details">
         <div class="c-row"><div class="c-ico">✉</div><div><div class="c-lbl">Email</div><div class="c-val">hello@showupbot.com</div></div></div>
-        <div class="c-row"><div class="c-ico">💬</div><div><div class="c-lbl">WhatsApp (naturally)</div><div class="c-val">+44 7700 900 000</div></div></div>
-        <div class="c-row"><div class="c-ico">⏱</div><div><div class="c-lbl">Response time</div><div class="c-val">Under 2 hours on weekdays</div></div></div>
+        <div class="c-row"><div class="c-ico">💬</div><div><div class="c-lbl">WhatsApp (naturally)</div><div class="c-val">+27 82 000 0000</div></div></div>
+        <div class="c-row"><div class="c-ico">⏱</div><div><div class="c-lbl">Response time</div><div class="c-val">Within 2 hours, Mon–Fri (SAST)</div></div></div>
       </div>
       <div class="c-promise">
         <div class="c-promise-label">What to expect</div>
@@ -542,17 +537,17 @@ section { padding:4rem 1.5rem; }
     <div>
       <div class="c-form" id="cForm">
         <div class="f-row">
-          <div class="f-grp"><label>First Name</label><input type="text" id="fn" placeholder="Alex"></div>
-          <div class="f-grp"><label>Last Name</label><input type="text" id="ln" placeholder="Johnson"></div>
+          <div class="f-grp"><label>First Name</label><input type="text" id="fn" placeholder="Thabo"></div>
+          <div class="f-grp"><label>Last Name</label><input type="text" id="ln" placeholder="Nkosi"></div>
         </div>
-        <div class="f-grp"><label>Work Email</label><input type="email" id="em" placeholder="you@practice.com"></div>
+        <div class="f-grp"><label>Work Email</label><input type="email" id="em" placeholder="you@yourbusiness.co.za"></div>
         <div class="f-row">
-          <div class="f-grp"><label>Business type</label><select id="bt"><option value="" disabled selected>Select industry</option><option>Medical / Healthcare</option><option>Beauty & Wellness</option><option>Fitness & Coaching</option><option>Therapy & Mental Health</option><option>Education & Tutoring</option><option>Real Estate</option><option>Other</option></select></div>
+          <div class="f-grp"><label>Business type</label><select id="bt"><option value="" disabled selected>Select industry</option><option>Medical / Healthcare</option><option>Beauty &amp; Wellness</option><option>Fitness &amp; Coaching</option><option>Therapy &amp; Mental Health</option><option>Education &amp; Tutoring</option><option>Property / Real Estate</option><option>Other</option></select></div>
           <div class="f-grp"><label>Bookings / month</label><select id="bk"><option value="" disabled selected>Approx. volume</option><option>Under 50</option><option>50–200</option><option>200–500</option><option>500+</option></select></div>
         </div>
-        <div class="f-grp"><label>Current booking tool</label><input type="text" id="tl" placeholder="Calendly, Acuity, Google Calendar…"></div>
+        <div class="f-grp"><label>Current booking tool</label><input type="text" id="tl" placeholder="Fresha, Google Calendar, Bookem…"></div>
         <div class="f-grp"><label>Anything to add?</label><textarea rows="3" id="msg" placeholder="Current no-show rate, biggest pain point…"></textarea></div>
-        <button class="f-submit" onclick="submitForm()">Book My Free Demo →</button>
+        <button type="button" class="f-submit" onclick="submitForm()">Book My Free Demo →</button>
         <div class="f-note">No commitment. No spam. We'll WhatsApp you to confirm the time.</div>
       </div>
       <div class="success-box" id="sBx">
@@ -565,25 +560,18 @@ section { padding:4rem 1.5rem; }
 
 <footer>
   <div class="f-logo"><span class="nav-dot"></span>ShowUp</div>
-  <div class="f-copy">© 2026 ShowUp — Reducing no-shows, one WhatsApp at a time.</div>
-  <div class="f-links"><a href="#">Privacy</a><a href="#">Terms</a><a href="#">GDPR</a></div>
+  <div class="f-copy">© 2026 ShowUp — Built for South Africa. Fewer no-shows, one WhatsApp at a time.</div>
+  <div class="f-links"><a href="#">Privacy</a><a href="#">Terms</a><a href="#">POPIA</a></div>
 </footer>
 
 <script>
-const cur = document.getElementById('cur');
-document.addEventListener('mousemove', e => { cur.style.left=e.clientX+'px'; cur.style.top=e.clientY+'px'; });
-document.querySelectorAll('button,a,input,select,textarea').forEach(el=>{
-  el.addEventListener('mouseenter',()=>cur.classList.add('big'));
-  el.addEventListener('mouseleave',()=>cur.classList.remove('big'));
-});
-
 window.addEventListener('scroll',()=>document.getElementById('nav').classList.toggle('shadow',scrollY>40));
 function go(id){ document.getElementById(id).scrollIntoView({behavior:'smooth'}); }
 
 function runCounter(el){
   const to=parseInt(el.dataset.to,10);
   const dur=to>1000?2200:1400; const step=to/(dur/16); let c=0;
-  const t=setInterval(()=>{ c+=step; if(c>=to){c=to;clearInterval(t);} el.textContent=to>=1000?Math.floor(c).toLocaleString():Math.floor(c); },16);
+  const t=setInterval(()=>{ c+=step; if(c>=to){c=to;clearInterval(t);} el.textContent=to>=1000?Math.floor(c).toLocaleString('en-ZA'):Math.floor(c); },16);
 }
 
 const io = new IntersectionObserver(entries=>{
@@ -594,7 +582,7 @@ const io = new IntersectionObserver(entries=>{
     e.target.querySelectorAll('.counter').forEach(runCounter);
     e.target.querySelectorAll('.counter-big').forEach(el=>{
       const to=parseInt(el.dataset.to,10); const step=to/(2400/16); let c=0;
-      const t=setInterval(()=>{ c+=step; if(c>=to){c=to;clearInterval(t);} el.textContent=Math.floor(c).toLocaleString(); },16);
+      const t=setInterval(()=>{ c+=step; if(c>=to){c=to;clearInterval(t);} el.textContent=Math.floor(c).toLocaleString('en-ZA'); },16);
     });
   });
 },{threshold:.25});
