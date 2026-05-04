@@ -1,7 +1,0 @@
-# Wasmer Edge — tells Git/CI which package to run (fixes "could not detect a provider").
-# If deploy fails on owner/package, change `owner` to your Wasmer username (see wasmer.io account).
-
-kind: wasmer.io/App.v0
-owner: lucapalooka
-name: showup-website
-package: lucapalooka/showup-website
