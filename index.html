@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ShowUp — WhatsApp Follow-Up That Fills Your Calendar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+:root {
+--ink: #0C0B09;
+--paper: #F5F3EE;
+--paper2: #EDEAE2;
+--green: #18E96A;
+--green-dark: #0AB84E;
+--rule: #D8D4CA;
+--muted: #8A877F;
+--red: #E84040;
+}
+
+body {
+background: var(--paper);
+color: var(--ink);
+font-family: 'JetBrains Mono', monospace;
+font-weight: 300;
+overflow-x: hidden;
+cursor: none;
+}
+
+#cur { position:fixed;width:8px;height:8px;background:var(--ink);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .2s,height .2s,background .2s,opacity .2s; }
+#cur.big { width:48px;height:48px;background:var(--green);mix-blend-mode:multiply; }
+
+nav {
+position:fixed;top:0;left:0;right:0;z-index:200;
+display:flex;align-items:center;justify-content:space-between;
+padding:1.1rem 2.5rem;
+background:var(--paper);
+border-bottom:1px solid var(--rule);
+transition:box-shadow .3s;
+}
+nav.shadow { box-shadow:0 2px 24px rgba(0,0,0,.07); }
+.nav-logo { font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:.06em;display:flex;align-items:center;gap:.5rem; }
+.nav-dot { width:8px;height:8px;background:var(--green);border-radius:50%;flex-shrink:0;animation:breathe 2.4s ease-in-out infinite; }
+@keyframes breathe { 0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.6);opacity:.5} }
+nav ul { list-style:none;display:flex;gap:2rem; }
+nav a { color:var(--muted);text-decoration:none;font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;transition:color .2s; }
+nav a:hover { color:var(--ink); }
+.nav-btn { background:var(--ink);color:var(--paper);border:none;padding:.6rem 1.4rem;font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;cursor:none;transition:background .2s; }
+.nav-btn:hover { background:var(--green-dark); }
+
+#hero {
+min-height:100vh;padding:7rem 2.5rem 0;
+display:grid;grid-template-columns:1fr 380px;grid-template-rows:1fr auto;
+gap:0 4rem;align-items:center;
+border-bottom:1px solid var(--rule);position:relative;overflow:hidden;
+}
+.hero-left { grid-column:1; }
+.hero-right { grid-column:2;align-self:center; }
+.hero-bottom {
+grid-column:1/-1;padding:2.5rem 0;border-top:1px solid var(--rule);margin-top:3rem;
+display:grid;grid-template-columns:repeat(4,1fr);gap:0;
+}
+
+.hero-eyebrow {
+display:inline-flex;align-items:center;gap:.7rem;
+font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);
+margin-bottom:2rem;opacity:0;animation:fadeUp .6s .1s forwards;
+}
+.eyebrow-pill { background:var(--green);color:var(--ink);padding:.2rem .7rem;font-weight:500;font-size:.6rem;letter-spacing:.1em; }
+
+.hero-hed {
+font-family:'Bebas Neue',sans-serif;
+font-size:clamp(4.5rem,8.5vw,9rem);
+line-height:.9;letter-spacing:.01em;margin-bottom:1.8rem;
+opacity:0;animation:fadeUp .7s .25s forwards;
+}
+.hero-hed em { font-style:italic;font-family:'Instrument Serif',serif;color:var(--green-dark); }
+
+.hero-body {
+max-width:440px;font-size:.88rem;line-height:1.75;color:#5a5750;
+margin-bottom:2.5rem;opacity:0;animation:fadeUp .7s .4s forwards;
+}
+.hero-ctas { display:flex;gap:1rem;align-items:center;opacity:0;animation:fadeUp .7s .55s forwards; }
+.btn-ink { background:var(--ink);color:var(--paper);border:none;padding:.9rem 2.2rem;font-family:'JetBrains Mono',monospace;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;cursor:none;transition:transform .2s,box-shadow .2s; }
+.btn-ink:hover { transform:translateY(-2px);box-shadow:0 8px 28px rgba(12,11,9,.18); }
+.btn-outline { background:transparent;color:var(--ink);border:1px solid var(--rule);padding:.9rem 2.2rem;font-family:'JetBrains Mono',monospace;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;cursor:none;transition:border-color .2s; }
+.btn-outline:hover { border-color:var(--ink); }
+
+.hero-stat { padding:1.8rem 2rem;border-left:1px solid var(--rule); }
+.hero-stat:first-child { border-left:none;padding-left:0; }
+.h-num { font-family:'Bebas Neue',sans-serif;font-size:3.4rem;line-height:1;letter-spacing:.02em; }
+.h-num .u { font-size:1.8rem;color:var(--green-dark); }
+.h-lbl { font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:.3rem; }
+
+.phone-wrap { opacity:0;animation:fadeUp .8s .5s forwards; }
+.phone-frame {
+width:100%;max-width:320px;margin:0 auto;
+background:#fff;border-radius:38px;
+border:7px solid var(--ink);
+box-shadow:7px 7px 0 var(--ink);
+overflow:hidden;
+}
+.p-status { background:#fff;padding:12px 18px 6px;display:flex;justify-content:space-between;font-size:.58rem;letter-spacing:.04em; }
+.wa-bar { background:#F0F2F5;padding:9px 14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #e0e0e0; }
+.wa-av { width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--green),var(--green-dark));display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:.85rem;color:var(--ink);flex-shrink:0; }
+.wa-nm { font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:500;color:#111; }
+.wa-st { font-size:.56rem;color:#25D366; }
+.wa-msgs { background:#E5DDD5;padding:12px 10px;min-height:340px;display:flex;flex-direction:column;gap:7px; }
+.bub { max-width:84%;padding:7px 11px 4px;border-radius:7px;font-size:.68rem;line-height:1.5;font-family:'JetBrains Mono',monospace;font-weight:300;opacity:0;transform:translateY(6px);animation:popIn .3s forwards; }
+.bub b { font-weight:500; }
+.bub-them { background:#fff;color:#111;border-radius:0 7px 7px 7px;align-self:flex-start;box-shadow:0 1px 2px rgba(0,0,0,.1); }
+.bub-me { background:#DCF8C6;color:#111;border-radius:7px 0 7px 7px;align-self:flex-end;box-shadow:0 1px 2px rgba(0,0,0,.1); }
+.bub-time { font-size:.5rem;color:#aaa;text-align:right;margin-top:2px; }
+@keyframes popIn { to{opacity:1;transform:translateY(0)} }
+.bub:nth-child(1){animation-delay:1.2s}.bub:nth-child(2){animation-delay:2.5s}.bub:nth-child(3){animation-delay:3.5s}.bub:nth-child(4){animation-delay:4.8s}.bub:nth-child(5){animation-delay:5.8s}
+.wa-input-bar { background:#F0F2F5;padding:9px 12px;display:flex;gap:8px;align-items:center;border-top:1px solid #e0e0e0; }
+.wa-input-fake { flex:1;background:#fff;border-radius:18px;padding:7px 12px;font-size:.62rem;color:#bbb;font-family:'JetBrains Mono',monospace; }
+
+section { padding:6rem 2.5rem;border-bottom:1px solid var(--rule); }
+.sec-label { font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:1.2rem;display:flex;align-items:center;gap:.8rem; }
+.sec-label::after { content:'';flex:1;height:1px;background:var(--rule); }
+.sec-hed { font-family:'Bebas Neue',sans-serif;font-size:clamp(2.6rem,4.5vw,4.8rem);line-height:.95;letter-spacing:.02em;margin-bottom:1.2rem; }
+.sec-hed em { font-family:'Instrument Serif',serif;font-style:italic; }
+.sec-sub { font-size:.85rem;line-height:1.75;color:var(--muted);max-width:500px; }
+
+#stats { background:var(--ink);color:var(--paper); }
+#stats .sec-label { color:#444; }
+#stats .sec-label::after { background:#222; }
+
+.stats-layout { display:grid;grid-template-columns:1.1fr 1fr;gap:5rem;align-items:start;margin-top:4rem; }
+
+.compare-block { display:flex;flex-direction:column;gap:2rem;margin-bottom:3rem; }
+.compare-head { display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.6rem; }
+.compare-channel { font-size:.63rem;letter-spacing:.1em;text-transform:uppercase; }
+.compare-pct { font-family:'Bebas Neue',sans-serif;font-size:1.8rem;line-height:1; }
+.compare-pct.hi { color:var(--green); }
+.compare-pct.lo { color:#444; }
+.bar-track { height:5px;background:#1c1c1c;border-radius:3px;overflow:hidden; }
+.bar-fill { height:100%;border-radius:3px;transform:scaleX(0);transform-origin:left;transition:transform 1.4s cubic-bezier(.16,1,.3,1); }
+.bar-fill.green { background:var(--green); }
+.bar-fill.grey { background:#3a3a3a; }
+.bar-fill.live { transform:scaleX(1); }
+.compare-caption { font-size:.6rem;color:#444;margin-top:.4rem; }
+
+.rev-chart { border-top:1px solid #1a1a1a;padding-top:2rem; }
+.rev-title { font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:#444;margin-bottom:1.2rem; }
+.rev-bars { display:flex;align-items:flex-end;gap:.5rem;height:90px;margin-bottom:.6rem; }
+.rev-bar-wrap { flex:1;display:flex;flex-direction:column;align-items:center;gap:.3rem; }
+.rev-bar { width:100%;border-radius:2px 2px 0 0;transform:scaleY(0);transform-origin:bottom;transition:transform 1s cubic-bezier(.16,1,.3,1); }
+.rev-bar.live { transform:scaleY(1); }
+.rev-bar.before { background:#222; }
+.rev-bar.after { background:var(--green); }
+.rev-bar-lbl { font-size:.55rem;color:#444;text-align:center; }
+.rev-bar-val { font-family:'Bebas Neue',sans-serif;font-size:.85rem;color:#555; }
+.rev-bar-val.g { color:var(--green); }
+.rev-legend { display:flex;gap:1.5rem;margin-top:.4rem; }
+.rev-leg-item { display:flex;align-items:center;gap:.4rem;font-size:.56rem;color:#444;letter-spacing:.08em;text-transform:uppercase; }
+.rev-leg-dot { width:7px;height:7px;border-radius:1px; }
+
+.stats-right { display:flex;flex-direction:column;gap:1.5rem; }
+.stat-callout { border:1px solid #1e1e1e;padding:2.5rem;position:relative;overflow:hidden; }
+.stat-callout::before { content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(24,233,106,.05),transparent); }
+.callout-pre { font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:#555;margin-bottom:.6rem;position:relative; }
+.callout-num { font-family:'Bebas Neue',sans-serif;font-size:5.5rem;line-height:.85;letter-spacing:.02em;color:var(--green);position:relative; }
+.callout-unit { font-size:2rem;color:#666; }
+.callout-post { font-size:.8rem;color:#666;line-height:1.65;max-width:260px;margin-top:.8rem;position:relative; }
+
+.mini-stats { display:grid;grid-template-columns:1fr 1fr;gap:1px;background:#1a1a1a;border:1px solid #1a1a1a; }
+.mini-stat { background:var(--ink);padding:1.5rem; }
+.ms-num { font-family:'Bebas Neue',sans-serif;font-size:2.6rem;line-height:1; }
+.ms-num .a { color:var(--green); }
+.ms-lbl { font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:#444;margin-top:.3rem; }
+
+.noshows-box { border:1px solid #1e1e1e;padding:1.8rem; }
+.noshows-title { font-size:.56rem;letter-spacing:.14em;text-transform:uppercase;color:#444;margin-bottom:1.2rem; }
+.noshows-row { margin-bottom:.9rem; }
+.noshows-head { display:flex;justify-content:space-between;margin-bottom:.4rem;font-size:.63rem; }
+.noshows-label { color:#555; }
+.noshows-label.g { color:var(--green); }
+.noshows-val { font-family:'Bebas Neue',sans-serif;font-size:1rem; }
+.noshows-val.g { color:var(--green); }
+.noshows-delta { margin-top:.8rem;padding-top:.8rem;border-top:1px solid #1a1a1a;font-size:.68rem;color:#444; }
+
+#how { background:var(--paper2); }
+.steps { display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--rule);margin-top:4rem; }
+.step { padding:2.8rem 2.2rem;border-right:1px solid var(--rule); }
+.step:last-child { border-right:none; }
+.step-n { font-family:'Bebas Neue',sans-serif;font-size:4.5rem;line-height:1;color:var(--rule);margin-bottom:1.5rem;transition:color .3s; }
+.step:hover .step-n { color:var(--green); }
+.step-tag { display:inline-block;background:var(--ink);color:var(--paper);font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;padding:.25rem .6rem;margin-bottom:.9rem; }
+.step h3 { font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:.04em;margin-bottom:.7rem; }
+.step p { font-size:.78rem;line-height:1.7;color:var(--muted); }
+
+#compare { background:var(--paper); }
+.ba-grid { display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--rule);margin-top:4rem; }
+.ba-col { padding:3rem; }
+.ba-col.after { background:var(--ink);color:var(--paper); }
+.ba-heading { margin-bottom:2rem; }
+.ba-pill { display:inline-block;font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;padding:.3rem .7rem;border:1px solid var(--rule);color:var(--muted); }
+.ba-pill.ap { background:var(--green);color:var(--ink);border-color:var(--green); }
+.ba-list { list-style:none;display:flex;flex-direction:column;gap:0; }
+.ba-list li { padding:.95rem 0;border-bottom:1px solid var(--rule);font-size:.8rem;line-height:1.6;display:flex;align-items:flex-start;gap:.8rem; }
+.ba-col.after .ba-list li { border-bottom-color:#1a1a1a; }
+.ba-list li::before { content:'\2715';color:var(--red);flex-shrink:0;font-size:.75rem;margin-top:.15rem; }
+.ba-col.after .ba-list li::before { content:'\2713';color:var(--green); }
+.ba-total { margin-top:2rem;padding:1.2rem;background:rgba(232,64,64,.07);border:1px solid rgba(232,64,64,.18); }
+.ba-col.after .ba-total { background:rgba(24,233,106,.07);border-color:rgba(24,233,106,.18); }
+.ba-total-lbl { font-size:.56rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted); }
+.ba-col.after .ba-total-lbl { color:#555; }
+.ba-total-val { font-family:'Bebas Neue',sans-serif;font-size:2.4rem;margin-top:.3rem; }
+.ba-total-val.r { color:var(--red); }
+.ba-total-val.g { color:var(--green); }
+
+#features { background:var(--paper2); }
+.feat-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--rule);margin-top:4rem; }
+.feat { padding:2.5rem 2rem;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);transition:background .25s; }
+.feat:nth-child(3),.feat:nth-child(6) { border-right:none; }
+.feat:nth-child(4),.feat:nth-child(5),.feat:nth-child(6) { border-bottom:none; }
+.feat:hover { background:var(--paper); }
+.feat-n { font-family:'Bebas Neue',sans-serif;font-size:3.2rem;color:var(--rule);line-height:1;transition:color .3s;margin-bottom:.7rem; }
+.feat:hover .feat-n { color:var(--ink); }
+.feat h4 { font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:.05em;margin-bottom:.5rem; }
+.feat p { font-size:.77rem;color:var(--muted);line-height:1.65; }
+
+#proof { background:var(--paper); }
+.proof-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--rule);margin-top:4rem; }
+.t-card { padding:2.5rem 2rem;border-right:1px solid var(--rule); }
+.t-card:last-child { border-right:none; }
+.t-stars { color:var(--green-dark);font-size:.65rem;letter-spacing:3px;margin-bottom:1rem; }
+.t-body { font-family:'Instrument Serif',serif;font-size:1rem;line-height:1.65;margin-bottom:1.6rem;font-style:italic;color:#3a3830; }
+.t-foot { border-top:1px solid var(--rule);padding-top:1.2rem;display:flex;align-items:center;gap:.8rem; }
+.t-av { width:30px;height:30px;border-radius:50%;background:var(--paper2);border:1px solid var(--rule);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:.7rem;flex-shrink:0; }
+.t-nm { font-size:.72rem;font-weight:500;letter-spacing:.02em; }
+.t-role { font-size:.6rem;color:var(--muted); }
+.proof-bottom { margin-top:2.5rem;padding:2.5rem;border:1px solid var(--rule);background:var(--paper2);display:grid;grid-template-columns:repeat(4,1fr);gap:0; }
+.pb-stat { padding:1rem 2rem;border-left:1px solid var(--rule); }
+.pb-stat:first-child { border-left:none;padding-left:0; }
+.pb-n { font-family:'Bebas Neue',sans-serif;font-size:2.6rem;line-height:1; }
+.pb-n .g { color:var(--green-dark); }
+.pb-l { font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:.2rem; }
+
+#contact { background:var(--ink);color:var(--paper); }
+#contact .sec-label { color:#444; }
+#contact .sec-label::after { background:#1e1e1e; }
+#contact .sec-hed { color:var(--paper); }
+#contact .sec-sub { color:#555; }
+
+.contact-grid { display:grid;grid-template-columns:1fr 1.2fr;gap:6rem;margin-top:4rem;align-items:start; }
+.c-details { display:flex;flex-direction:column;gap:0; }
+.c-row { display:flex;gap:1rem;align-items:flex-start;padding:1.3rem 0;border-bottom:1px solid #1a1a1a; }
+.c-row:first-child { border-top:1px solid #1a1a1a; }
+.c-ico { width:30px;height:30px;background:#111;border:1px solid #1e1e1e;display:flex;align-items:center;justify-content:center;font-size:.75rem;flex-shrink:0;margin-top:2px; }
+.c-lbl { font-size:.55rem;letter-spacing:.14em;text-transform:uppercase;color:#444;margin-bottom:.3rem; }
+.c-val { font-size:.8rem;color:var(--paper); }
+.c-promise { margin-top:2.5rem;padding:2rem;border:1px solid #1a1a1a;background:#090909; }
+.c-promise-label { font-size:.56rem;letter-spacing:.14em;text-transform:uppercase;color:var(--green);margin-bottom:.7rem; }
+.c-promise p { font-size:.78rem;line-height:1.7;color:#555; }
+
+.c-form { display:flex;flex-direction:column;gap:1rem; }
+.f-row { display:grid;grid-template-columns:1fr 1fr;gap:1rem; }
+.f-grp { display:flex;flex-direction:column;gap:.4rem; }
+.f-grp label { font-size:.55rem;letter-spacing:.14em;text-transform:uppercase;color:#444; }
+.f-grp input,.f-grp select,.f-grp textarea {
+background:#0d0d0d;border:1px solid #1e1e1e;color:var(--paper);
+padding:.8rem .95rem;font-family:'JetBrains Mono',monospace;font-size:.78rem;
+font-weight:300;outline:none;transition:border-color .2s;resize:none;cursor:none;-webkit-appearance:none;
+}
+.f-grp input::placeholder,.f-grp textarea::placeholder { color:#2a2a2a; }
+.f-grp input:focus,.f-grp select:focus,.f-grp textarea:focus { border-color:var(--green); }
+.f-grp select option { background:#0d0d0d; }
+.f-submit { background:var(--green);color:var(--ink);border:none;padding:1.1rem;font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:.12em;cursor:none;transition:opacity .2s,transform .2s;margin-top:.4rem; }
+.f-submit:hover { opacity:.9;transform:translateY(-1px); }
+.f-note { font-size:.6rem;color:#333;text-align:center;letter-spacing:.04em; }
+.success-box { display:none;border:1px solid rgba(24,233,106,.2);background:rgba(24,233,106,.04);padding:3rem;text-align:center; }
+.success-box.show { display:block; }
+.success-box h3 { font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:.06em;color:var(--green);margin-bottom:.5rem; }
+.success-box p { font-size:.78rem;color:#555; }
+
+footer {
+background:var(--ink);color:var(--paper);padding:2rem 2.5rem;
+border-top:1px solid #111;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;
+}
+.f-logo { font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:.06em;display:flex;align-items:center;gap:.5rem; }
+.f-copy { font-size:.62rem;color:#333; }
+.f-links { display:flex;gap:2rem; }
+.f-links a { font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:#333;text-decoration:none;transition:color .2s; }
+.f-links a:hover { color:var(--paper); }
+
+@keyframes fadeUp { from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)} }
+.reveal { opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease; }
+.reveal.in { opacity:1;transform:translateY(0); }
+
+@media(max-width:900px){
+nav ul { display:none; }
+nav { padding:1rem 1.5rem; }
+#hero { grid-template-columns:1fr;grid-template-rows:auto;padding:6rem 1.5rem 0; }
+.hero-right { display:none; }
+.hero-bottom { grid-template-columns:1fr 1fr; }
+section { padding:4rem 1.5rem; }
+.stats-layout,.ba-grid,.contact-grid { grid-template-columns:1fr; }
+.steps,.feat-grid,.proof-grid { grid-template-columns:1fr; }
+.step,.feat,.t-card { border-right:none;border-bottom:1px solid var(--rule); }
+.mini-stats { grid-template-columns:1fr 1fr; }
+.proof-bottom { grid-template-columns:1fr 1fr; }
+.f-row { grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+<div id="cur"></div>
+
+<nav id="nav">
+  <div class="nav-logo"><span class="nav-dot"></span>ShowUp</div>
+  <ul>
+    <li><a href="#stats">Data</a></li>
+    <li><a href="#how">How It Works</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#proof">Results</a></li>
+  </ul>
+  <button class="nav-btn" onclick="go('contact')">Book a Demo</button>
+</nav>
+
+<section id="hero">
+  <div class="hero-left">
+    <div class="hero-eyebrow"><span class="eyebrow-pill">WhatsApp Bot</span> Appointment follow-up, automated</div>
+    <h1 class="hero-hed">Your clients<br><em>always</em><br>ShowUp.</h1>
+    <p class="hero-body">ShowUp sends intelligent WhatsApp reminders that get read, get replied to, and get your slots confirmed — automatically. No more chasing. No more empty chairs.</p>
+    <div class="hero-ctas">
+      <button class="btn-ink" onclick="go('contact')">Book a Free Demo →</button>
+      <button class="btn-outline" onclick="go('how')">See How It Works</button>
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <div class="phone-wrap">
+      <div class="phone-frame">
+        <div class="p-status"><span style="font-weight:500;font-size:.75rem">09:41</span><span>▲▲▲ WiFi</span></div>
+        <div class="wa-bar">
+          <div class="wa-av">SU</div>
+          <div><div class="wa-nm">ShowUp Reminders</div><div class="wa-st">● Online</div></div>
+        </div>
+        <div class="wa-msgs">
+          <div class="bub bub-them">👋 Hi <b>Sarah!</b> Reminder — you have <b>Dr. Patel</b> tomorrow, Wed 14th at <b>2:00 PM.</b> Can you confirm?<div class="bub-time">09:00 AM ✓✓</div></div>
+          <div class="bub bub-me">Yes I'll be there! 👍<div class="bub-time">09:04 AM</div></div>
+          <div class="bub bub-them">✅ <b>Confirmed!</b> We're at <b>12 Park Ave, 4th Floor.</b> Reply MAP for directions or CANCEL to reschedule.<div class="bub-time">09:04 AM ✓✓</div></div>
+          <div class="bub bub-them">⏰ See you in <b>1 hour</b>, Sarah! The team is ready for you.<div class="bub-time">01:00 PM ✓✓</div></div>
+          <div class="bub bub-me">On my way! 🚗<div class="bub-time">01:06 PM</div></div>
+        </div>
+        <div class="wa-input-bar"><div class="wa-input-fake">Type a message</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-bottom">
+    <div class="hero-stat"><div class="h-num"><span class="counter" data-to="87">0</span><span class="u">%</span></div><div class="h-lbl">Fewer no-shows</div></div>
+    <div class="hero-stat"><div class="h-num"><span class="counter" data-to="98">0</span><span class="u">%</span></div><div class="h-lbl">WhatsApp open rate</div></div>
+    <div class="hero-stat"><div class="h-num">£<span class="counter" data-to="4200">0</span></div><div class="h-lbl">Avg. monthly recovered</div></div>
+    <div class="hero-stat"><div class="h-num"><span class="counter" data-to="3">0</span><span class="u">min</span></div><div class="h-lbl">Setup time</div></div>
+  </div>
+</section>
+
+<section id="stats">
+  <div class="sec-label">The data</div>
+  <h2 class="sec-hed">Numbers that make <em>the case.</em></h2>
+
+  <div class="stats-layout reveal">
+    <div>
+      <div style="font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:#444;margin-bottom:1.4rem">Channel open rates — why WhatsApp wins</div>
+      <div class="compare-block">
+        <div class="compare-item">
+          <div class="compare-head"><span class="compare-channel" style="color:var(--green)">WhatsApp</span><span class="compare-pct hi">98%</span></div>
+          <div class="bar-track"><div class="bar-fill green" style="width:98%"></div></div>
+          <div class="compare-caption">Messages seen within 5 minutes on average</div>
+        </div>
+        <div class="compare-item">
+          <div class="compare-head"><span class="compare-channel">Email</span><span class="compare-pct lo">21%</span></div>
+          <div class="bar-track"><div class="bar-fill grey" style="width:21%"></div></div>
+          <div class="compare-caption">Industry average email open rate</div>
+        </div>
+        <div class="compare-item">
+          <div class="compare-head"><span class="compare-channel">SMS</span><span class="compare-pct lo">45%</span></div>
+          <div class="bar-track"><div class="bar-fill grey" style="width:45%"></div></div>
+          <div class="compare-caption">Generic SMS without personalisation</div>
+        </div>
+        <div class="compare-item">
+          <div class="compare-head"><span class="compare-channel">Phone call</span><span class="compare-pct lo">12%</span></div>
+          <div class="bar-track"><div class="bar-fill grey" style="width:12%"></div></div>
+          <div class="compare-caption">Answer rate for unknown numbers</div>
+        </div>
+      </div>
+
+  <div class="rev-chart">
+    <div class="rev-title">Monthly revenue recovered — ShowUp customers, avg. across 6 months</div>
+    <div class="rev-bars">
+      <div class="rev-bar-wrap"><div class="rev-bar-val">£620</div><div class="rev-bar before" style="height:18px"></div><div class="rev-bar-lbl">Mo 1</div></div>
+      <div class="rev-bar-wrap"><div class="rev-bar-val g">£1.4k</div><div class="rev-bar after" style="height:42px"></div><div class="rev-bar-lbl">Mo 2</div></div>
+      <div class="rev-bar-wrap"><div class="rev-bar-val g">£2.1k</div><div class="rev-bar after" style="height:60px"></div><div class="rev-bar-lbl">Mo 3</div></div>
+      <div class="rev-bar-wrap"><div class="rev-bar-val g">£2.8k</div><div class="rev-bar after" style="height:74px"></div><div class="rev-bar-lbl">Mo 4</div></div>
+      <div class="rev-bar-wrap"><div class="rev-bar-val g">£3.6k</div><div class="rev-bar after" style="height:86px"></div><div class="rev-bar-lbl">Mo 5</div></div>
+      <div class="rev-bar-wrap"><div class="rev-bar-val g">£4.2k</div><div class="rev-bar after" style="height:90px"></div><div class="rev-bar-lbl">Mo 6</div></div>
+    </div>
+    <div class="rev-legend">
+      <div class="rev-leg-item"><div class="rev-leg-dot" style="background:#333"></div>Without ShowUp</div>
+      <div class="rev-leg-item"><div class="rev-leg-dot" style="background:var(--green)"></div>With ShowUp</div>
+    </div>
+  </div>
+</div>
+
+<div class="stats-right">
+  <div class="stat-callout">
+    <div class="callout-pre">Average business loses annually to no-shows</div>
+    <div class="callout-num">£<span class="counter-big" data-to="8400">0</span></div>
+    <div class="callout-post">That's 2–3 holidays, a new team member, or reinvested marketing — walking out the door every year, unnoticed.</div>
+  </div>
+
+  <div class="mini-stats">
+    <div class="mini-stat"><div class="ms-num"><span class="counter" data-to="94">0</span><span class="a">%</span></div><div class="ms-lbl">Confirm within 30 mins</div></div>
+    <div class="mini-stat"><div class="ms-num"><span class="counter" data-to="2">0</span><span class="a">min</span></div><div class="ms-lbl">Avg client response</div></div>
+    <div class="mini-stat"><div class="ms-num"><span class="counter" data-to="340">0</span><span class="a">+</span></div><div class="ms-lbl">Businesses on ShowUp</div></div>
+    <div class="mini-stat"><div class="ms-num"><span class="counter" data-to="50">0</span><span class="a">k+</span></div><div class="ms-lbl">Bookings confirmed /mo</div></div>
+  </div>
+
+  <div class="noshows-box">
+    <div class="noshows-title">No-show rate — before &amp; after ShowUp</div>
+    <div class="noshows-row">
+      <div class="noshows-head"><span class="noshows-label">Before ShowUp</span><span class="noshows-val">28%</span></div>
+      <div class="bar-track"><div class="bar-fill grey" style="width:28%"></div></div>
+    </div>
+    <div class="noshows-row">
+      <div class="noshows-head"><span class="noshows-label g">After ShowUp</span><span class="noshows-val g">3.4%</span></div>
+      <div class="bar-track"><div class="bar-fill green" style="width:3.4%"></div></div>
+    </div>
+    <div class="noshows-delta">↓ <span style="color:var(--green)">87.8% reduction</span> in missed appointments</div>
+  </div>
+</div>
+
+  </div>
+</section>
+
+<section id="how">
+  <div class="sec-label">Process</div>
+  <h2 class="sec-hed">Three steps. <em>Zero</em> manual effort.</h2>
+  <p class="sec-sub">ShowUp runs silently in the background so you never think about it again.</p>
+  <div class="steps reveal" style="transition-delay:.1s">
+    <div class="step"><div class="step-n">01</div><div class="step-tag">5 minutes</div><h3>Connect Your Calendar</h3><p>Link ShowUp to Calendly, Acuity, Google Calendar or any booking tool via Zapier. One authorisation. Nothing else.</p></div>
+    <div class="step"><div class="step-n">02</div><div class="step-tag">Automatic</div><h3>Bot Sends Follow-Ups</h3><p>ShowUp messages each client on WhatsApp — 24hrs and 2hrs before — collecting confirmations, handling reschedules, answering FAQs.</p></div>
+    <div class="step"><div class="step-n">03</div><div class="step-tag">Live</div><h3>Watch Attendance Climb</h3><p>Your dashboard shows confirmation rates, no-show trends and recovered revenue in real time. Know exactly what ShowUp saves you.</p></div>
+  </div>
+</section>
+
+<section id="compare">
+  <div class="sec-label">Without vs With</div>
+  <h2 class="sec-hed">The <em>real cost</em> of doing nothing.</h2>
+  <div class="ba-grid reveal" style="transition-delay:.1s">
+    <div class="ba-col">
+      <div class="ba-heading"><span class="ba-pill">Without ShowUp</span></div>
+      <ul class="ba-list">
+        <li>Chasing clients by phone — 45 min/day minimum</li>
+        <li>Email reminders ignored or never opened</li>
+        <li>Last-minute cancellations with no replacement booked</li>
+        <li>No-show slots earning nothing for the day</li>
+        <li>Manual reschedule coordination via endless texts</li>
+        <li>Zero visibility on who's actually confirmed</li>
+      </ul>
+      <div class="ba-total"><div class="ba-total-lbl">Estimated annual loss</div><div class="ba-total-val r">−£8,400</div></div>
+    </div>
+    <div class="ba-col after">
+      <div class="ba-heading"><span class="ba-pill ap">With ShowUp</span></div>
+      <ul class="ba-list">
+        <li>WhatsApp reminders sent automatically — 0 min/day</li>
+        <li>98% open rate, replies within 2 minutes</li>
+        <li>Clients reschedule inside the chat, slot refilled</li>
+        <li>Cancellation waitlist fills empty gaps automatically</li>
+        <li>One-tap confirm or reschedule — frictionless for clients</li>
+        <li>Live dashboard: confirmed, pending, at-risk at a glance</li>
+      </ul>
+      <div class="ba-total"><div class="ba-total-lbl">Average monthly recovery</div><div class="ba-total-val g">+£4,200</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="features">
+  <div class="sec-label">What's included</div>
+  <h2 class="sec-hed">Built for <em>every detail</em> of follow-up.</h2>
+  <div class="feat-grid reveal" style="transition-delay:.1s">
+    <div class="feat"><div class="feat-n">01</div><h4>Smart Sequences</h4><p>Multi-step WhatsApp flows that adapt: if a client confirms, follow-ups stop. If they go quiet, escalation kicks in automatically.</p></div>
+    <div class="feat"><div class="feat-n">02</div><h4>One-Tap Reschedule</h4><p>Clients reschedule directly inside WhatsApp with a single reply. No phone calls. No email chains. Slot refilled instantly.</p></div>
+    <div class="feat"><div class="feat-n">03</div><h4>AI Personalisation</h4><p>Every message uses the client's name, appointment details and business context. Never sounds like a generic bot.</p></div>
+    <div class="feat"><div class="feat-n">04</div><h4>Cancellation Waitlist</h4><p>Late cancellations trigger your waitlist automatically — filling gaps before you even notice they're empty.</p></div>
+    <div class="feat"><div class="feat-n">05</div><h4>Revenue Dashboard</h4><p>Real-time view of confirmation rates, no-show trends and recovered revenue — updated live as responses arrive.</p></div>
+    <div class="feat"><div class="feat-n">06</div><h4>GDPR Ready</h4><p>Built-in opt-out handling, consent logging and data retention controls. You're covered from day one.</p></div>
+  </div>
+</section>
+
+<section id="proof">
+  <div class="sec-label">Customer results</div>
+  <h2 class="sec-hed">Real businesses. <em>Real numbers.</em></h2>
+  <div class="proof-grid reveal" style="transition-delay:.1s">
+    <div class="t-card">
+      <div class="t-stars">★★★★★</div>
+      <p class="t-body">"We were losing roughly 6 slots per week to no-shows. After a month with ShowUp that's down to one. The dashboard alone is worth the subscription."</p>
+      <div class="t-foot"><div class="t-av">LM</div><div><div class="t-nm">Laura M.</div><div class="t-role">Aesthetic Clinic, London</div></div></div>
+    </div>
+    <div class="t-card">
+      <div class="t-stars">★★★★★</div>
+      <p class="t-body">"My clients reply within minutes. I ran email reminders for three years — nobody read them. WhatsApp is a completely different channel."</p>
+      <div class="t-foot"><div class="t-av">JK</div><div><div class="t-nm">James K.</div><div class="t-role">Personal Trainer, Manchester</div></div></div>
+    </div>
+    <div class="t-card">
+      <div class="t-stars">★★★★★</div>
+      <p class="t-body">"Setup was genuinely 4 minutes. I connected Calendly and left it running. Haven't had to chase a client for a confirmation since."</p>
+      <div class="t-foot"><div class="t-av">AT</div><div><div class="t-nm">Amara T.</div><div class="t-role">Therapist, Birmingham</div></div></div>
+    </div>
+  </div>
+  <div class="proof-bottom reveal" style="transition-delay:.2s">
+    <div class="pb-stat"><div class="pb-n"><span class="counter" data-to="340">0</span><span class="g">+</span></div><div class="pb-l">Active businesses</div></div>
+    <div class="pb-stat"><div class="pb-n"><span class="counter" data-to="50">0</span><span class="g">k+</span></div><div class="pb-l">Bookings confirmed /mo</div></div>
+    <div class="pb-stat"><div class="pb-n"><span class="counter" data-to="87">0</span><span class="g">%</span></div><div class="pb-l">Avg. no-show reduction</div></div>
+    <div class="pb-stat"><div class="pb-n">4.<span class="g">9</span></div><div class="pb-l">Average rating</div></div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="sec-label">Get started</div>
+  <h2 class="sec-hed">Book a <em>20-minute</em> demo.</h2>
+  <p class="sec-sub">We'll show you ShowUp live, with your calendar, on the call.</p>
+  <div class="contact-grid">
+    <div>
+      <div class="c-details">
+        <div class="c-row"><div class="c-ico">✉</div><div><div class="c-lbl">Email</div><div class="c-val">hello@showupbot.com</div></div></div>
+        <div class="c-row"><div class="c-ico">💬</div><div><div class="c-lbl">WhatsApp (naturally)</div><div class="c-val">+44 7700 900 000</div></div></div>
+        <div class="c-row"><div class="c-ico">⏱</div><div><div class="c-lbl">Response time</div><div class="c-val">Under 2 hours on weekdays</div></div></div>
+      </div>
+      <div class="c-promise">
+        <div class="c-promise-label">What to expect</div>
+        <p>A 20-minute screen-share where we connect ShowUp to your calendar live and show you exactly what your clients will receive. No slides. No pitch deck. Just the product working.</p>
+      </div>
+    </div>
+    <div>
+      <div class="c-form" id="cForm">
+        <div class="f-row">
+          <div class="f-grp"><label>First Name</label><input type="text" id="fn" placeholder="Alex"></div>
+          <div class="f-grp"><label>Last Name</label><input type="text" id="ln" placeholder="Johnson"></div>
+        </div>
+        <div class="f-grp"><label>Work Email</label><input type="email" id="em" placeholder="you@practice.com"></div>
+        <div class="f-row">
+          <div class="f-grp"><label>Business type</label><select id="bt"><option value="" disabled selected>Select industry</option><option>Medical / Healthcare</option><option>Beauty & Wellness</option><option>Fitness & Coaching</option><option>Therapy & Mental Health</option><option>Education & Tutoring</option><option>Real Estate</option><option>Other</option></select></div>
+          <div class="f-grp"><label>Bookings / month</label><select id="bk"><option value="" disabled selected>Approx. volume</option><option>Under 50</option><option>50–200</option><option>200–500</option><option>500+</option></select></div>
+        </div>
+        <div class="f-grp"><label>Current booking tool</label><input type="text" id="tl" placeholder="Calendly, Acuity, Google Calendar…"></div>
+        <div class="f-grp"><label>Anything to add?</label><textarea rows="3" id="msg" placeholder="Current no-show rate, biggest pain point…"></textarea></div>
+        <button class="f-submit" onclick="submitForm()">Book My Free Demo →</button>
+        <div class="f-note">No commitment. No spam. We'll WhatsApp you to confirm the time.</div>
+      </div>
+      <div class="success-box" id="sBx">
+        <h3>You're Booked In!</h3>
+        <p>We'll message you on WhatsApp shortly to confirm your demo slot. Keep an eye on your phone.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="f-logo"><span class="nav-dot"></span>ShowUp</div>
+  <div class="f-copy">© 2026 ShowUp — Reducing no-shows, one WhatsApp at a time.</div>
+  <div class="f-links"><a href="#">Privacy</a><a href="#">Terms</a><a href="#">GDPR</a></div>
+</footer>
+
+<script>
+const cur = document.getElementById('cur');
+document.addEventListener('mousemove', e => { cur.style.left=e.clientX+'px'; cur.style.top=e.clientY+'px'; });
+document.querySelectorAll('button,a,input,select,textarea').forEach(el=>{
+  el.addEventListener('mouseenter',()=>cur.classList.add('big'));
+  el.addEventListener('mouseleave',()=>cur.classList.remove('big'));
+});
+
+window.addEventListener('scroll',()=>document.getElementById('nav').classList.toggle('shadow',scrollY>40));
+function go(id){ document.getElementById(id).scrollIntoView({behavior:'smooth'}); }
+
+function runCounter(el){
+  const to=parseInt(el.dataset.to,10);
+  const dur=to>1000?2200:1400; const step=to/(dur/16); let c=0;
+  const t=setInterval(()=>{ c+=step; if(c>=to){c=to;clearInterval(t);} el.textContent=to>=1000?Math.floor(c).toLocaleString():Math.floor(c); },16);
+}
+
+const io = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(!e.isIntersecting) return;
+    e.target.querySelectorAll('.bar-fill').forEach(b=>b.classList.add('live'));
+    e.target.querySelectorAll('.rev-bar').forEach(b=>b.classList.add('live'));
+    e.target.querySelectorAll('.counter').forEach(runCounter);
+    e.target.querySelectorAll('.counter-big').forEach(el=>{
+      const to=parseInt(el.dataset.to,10); const step=to/(2400/16); let c=0;
+      const t=setInterval(()=>{ c+=step; if(c>=to){c=to;clearInterval(t);} el.textContent=Math.floor(c).toLocaleString(); },16);
+    });
+  });
+},{threshold:.25});
+document.querySelectorAll('section').forEach(s=>io.observe(s));
+
+const revIo = new IntersectionObserver(entries=>entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('in'); }),{threshold:.1});
+document.querySelectorAll('.reveal').forEach(r=>revIo.observe(r));
+
+function submitForm(){
+  const fn=document.getElementById('fn').value.trim();
+  const em=document.getElementById('em').value.trim();
+  if(!fn||!em){ document.getElementById('em').style.borderColor='rgba(232,64,64,.6)'; setTimeout(()=>document.getElementById('em').style.borderColor='',2000); return; }
+  document.getElementById('cForm').style.display='none';
+  document.getElementById('sBx').classList.add('show');
+}
+</script>
+
+</body>
+</html>
